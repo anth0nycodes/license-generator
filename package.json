@@ -1,7 +1,17 @@
 {
   "name": "@anth0nycodes/license-generator",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "An open-source CLI tool to generate licenses for your repository.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build",
+    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org",
+    "publish:github": "npm publish --registry https://npm.pkg.github.com",
+    "publish:all": "npm run publish:npm && npm run publish:github"
+  },
   "main": "dist/index.js",
   "bin": {
     "license-generator": "./dist/index.js"
@@ -31,5 +41,13 @@
   "bugs": {
     "url": "https://github.com/anth0nycodes/license-generator/issues"
   },
-  "homepage": "https://github.com/anth0nycodes/license-generator#readme"
+  "homepage": "https://github.com/anth0nycodes/license-generator#readme",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.2"
+  }
 }
