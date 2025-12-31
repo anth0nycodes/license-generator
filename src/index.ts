@@ -22,6 +22,8 @@ const main = async () => {
     )
     .version("0.1.0");
 
+  program.parse();
+
   intro(color.greenBright("License Generator"));
 
   const BASE_URL = "https://api.github.com/licenses";
@@ -74,8 +76,6 @@ const main = async () => {
   console.log(licenseOptionContent);
 
   outro("Successfully terminated program.");
-
-  program.parse();
 };
 
 try {
