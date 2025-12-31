@@ -7,10 +7,7 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "prepublishOnly": "npm run build",
-    "publish:npm": "npm publish --access public --registry https://registry.npmjs.org",
-    "publish:github": "npm publish --registry https://npm.pkg.github.com",
-    "publish:all": "npm run publish:npm && npm run publish:github"
+    "publish:npm": "pnpm publish --access public"
   },
   "main": "dist/index.js",
   "bin": {

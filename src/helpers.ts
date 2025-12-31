@@ -3,14 +3,8 @@ import { constants } from "node:fs";
 import { access } from "node:fs/promises";
 
 export function getGitUsername() {
-  let uncleanName = String(execSync("git config user.name"));
-  let name = "";
-
-  if (uncleanName.includes("\n")) {
-    name = uncleanName.replace(/\r?\n/g, "");
-  }
-
-  return name;
+  const uncleanName = String(execSync("git config user.name"));
+  return uncleanName.replace(/\r?\n/g, "");
 }
 
 export async function fileExists(path: string): Promise<boolean> {
