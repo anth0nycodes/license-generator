@@ -14,7 +14,7 @@
   },
   "main": "dist/index.js",
   "bin": {
-    "license-generator": "./dist/index.js"
+    "generate-license": "./dist/index.js"
   },
   "keywords": [
     "license",
@@ -48,6 +48,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "axios": "^1.13.2",
     "commander": "^14.0.2"
   }
 }
