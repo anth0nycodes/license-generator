@@ -5,13 +5,14 @@ import {
   intro,
   outro,
   select,
-  text,
-  confirm,
   spinner,
   isCancel,
   cancel,
 } from "@clack/prompts";
+import inquirer from "inquirer";
 import { getLicenseContent, getLicenses } from "./license.js";
+import color from "picocolors";
+import { getGitUsername } from "./helpers.js";
 
 const main = async () => {
   program
@@ -21,7 +22,7 @@ const main = async () => {
     )
     .version("0.1.0");
 
-  intro("License Generator");
+  intro(color.greenBright("License Generator"));
 
   const BASE_URL = "https://api.github.com/licenses";
   const licenses = await getLicenses();
@@ -35,10 +36,41 @@ const main = async () => {
     })),
   });
 
+  if (isCancel(licenseOption)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  // Grab the inputs for name and year
+  const answers = await inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "Enter name:",
+      default: getGitUsername(),
+      validate(value) {
+        if (value.length === 0) return "A value is required!";
+        return true;
+      },
+    },
+    {
+      type: "input",
+      name: "year",
+      message: "Enter year:",
+      default: String(new Date().getFullYear()),
+      validate(value) {
+        if (value.length === 0) return "A value is required!";
+        return true;
+      },
+    },
+  ]);
+
   // Grab the content of the selected license
   const licenseOptionContent = await getLicenseContent(
     `${BASE_URL}/${String(licenseOption)}`,
   );
+
+  // TODO: write a LICENSE file with the content using fs
   console.log(licenseOptionContent);
 
   outro("Successfully terminated program.");
