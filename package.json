@@ -1,0 +1,35 @@
+{
+  "name": "@anth0nycodes/license-generator",
+  "version": "1.0.0",
+  "description": "An open-source CLI tool to generate licenses for your repository.",
+  "main": "dist/index.js",
+  "bin": {
+    "license-generator": "./dist/index.js"
+  },
+  "keywords": [
+    "license",
+    "license-generator",
+    "license-cli",
+    "cli",
+    "open-source",
+    "oss",
+    "node",
+    "npm",
+    "npx",
+    "mit",
+    "apache-2.0",
+    "boilerplate",
+    "project-setup",
+    "scaffold"
+  ],
+  "author": "Anthony Hoang",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anth0nycodes/license-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anth0nycodes/license-generator/issues"
+  },
+  "homepage": "https://github.com/anth0nycodes/license-generator#readme"
+}
