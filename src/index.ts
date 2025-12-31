@@ -11,7 +11,7 @@ import {
   isCancel,
   cancel,
 } from "@clack/prompts";
-import { getLicenseContent, getLicenses } from "./license";
+import { getLicenseContent, getLicenses } from "./license.js";
 
 const main = async () => {
   program
