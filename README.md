@@ -2,6 +2,10 @@
 
 An interactive CLI tool to quickly generate open-source licenses for your projects.
 
+## Demo
+
+https://github.com/user-attachments/assets/25d4a68b-4cb3-4570-ac57-88d955bbcb53
+
 ## Features
 
 - 🚀 Interactive license selection from GitHub's license API
