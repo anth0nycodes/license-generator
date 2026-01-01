@@ -13,7 +13,7 @@ const main = async () => {
     .description(
       "A CLI application that generates open-source licenses for your repositories.",
     )
-    .version("0.1.0");
+    .version("0.1.3");
 
   // TODO: Add options, so you can manually add a license flag like --license mit
 
