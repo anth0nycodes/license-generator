@@ -84,6 +84,8 @@ pnpm start
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+For detailed guidelines on how to contribute, please see our [Contributing Guide](CONTRIBUTING.md).
+
 ## Author
 
 **Anthony Hoang**
