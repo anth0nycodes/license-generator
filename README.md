@@ -12,7 +12,7 @@ An interactive CLI tool to quickly generate open-source licenses for your projec
 ## Installation
 
 ```bash
-pnpm install -g @anth0nycodes/license-generator
+pnpm add -g @anth0nycodes/license-generator
 ```
 
 Or using npm:
