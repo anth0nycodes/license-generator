@@ -10,7 +10,6 @@ import { getConfig, setConfig } from "./helpers.js";
 
 const main = async () => {
   const BASE_URL = "https://api.github.com/licenses";
-  const licenses = await getLicenses();
 
   program
     .name("License Generator")
@@ -19,7 +18,7 @@ const main = async () => {
     )
     .option(
       "--ls, --list",
-      "list all available license keys that can be used to set a default license in quick mode",
+      "list all available license keys that can be used to set a default license in quick mode"
     )
     .version("0.1.3");
 
@@ -89,8 +88,8 @@ const main = async () => {
   intro(color.blueBright("License Generator"));
 
   const licenses = await getLicenses();
-  
-   // Lists all available license keys to be set as a default for future quick mode license generation
+
+  // Lists all available license keys to be set as a default for future quick mode license generation
   if (opts.list) {
     const availableLicenseKeys = licenses
       .map((license) => `${color.yellow(license.name)}: ${license.key}`)
