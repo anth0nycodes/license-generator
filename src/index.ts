@@ -23,7 +23,7 @@ const main = async () => {
     .option("--ls, --list", "list all available license keys")
     .option(
       "-q, --quick",
-      "alternative to interactive mode, generate a license using the saved license",
+      "alternative to interactive mode, generate a license using the saved default license",
     )
     .option(
       "-s, --set <license>",
