@@ -17,7 +17,7 @@ const main = async () => {
     .description(
       "A CLI application that generates open-source licenses for your repositories.",
     )
-    .version("0.1.3");
+    .version("0.2.0");
 
   program
     .option("--ls, --list", "list all available license keys")
