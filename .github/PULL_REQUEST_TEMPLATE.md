@@ -33,7 +33,6 @@ Fixes #
 
 - [ ] Tested locally with `pnpm dev`
 - [ ] Tested built version with `pnpm build && pnpm start`
-- [ ] Tested as installed package with `pnpm link`
 - [ ] Tested with different license types
 - [ ] Tested edge cases (existing LICENSE file, etc.)
 
