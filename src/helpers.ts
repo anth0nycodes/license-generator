@@ -10,7 +10,7 @@ export function getGitUsername() {
   return uncleanName.replace(/\r?\n/g, "");
 }
 
-export async function fileExists(path: string): Promise<boolean> {
+export async function fileExists(path: string) {
   try {
     await access(path, constants.F_OK);
     return true;
@@ -18,8 +18,6 @@ export async function fileExists(path: string): Promise<boolean> {
     return false;
   }
 }
-
-// config reading + setting
 
 const CONFIG_DIR = join(homedir(), ".license-generator");
 const CONFIG_FILE = join(CONFIG_DIR, "config.json");
@@ -30,7 +28,7 @@ export interface Config {
 
 export async function getConfig(): Promise<Config> {
   try {
-    const content = await readFile(CONFIG_FILE, "utf-8");
+    const content = await readFile(CONFIG_FILE, "utf8");
     return JSON.parse(content);
   } catch {
     // config doesn't exist yet, return empty config
@@ -38,14 +36,18 @@ export async function getConfig(): Promise<Config> {
   }
 }
 
-export async function setConfig(config: Config): Promise<void> {
-  // make sure config directory exists
-  await mkdir(CONFIG_DIR, { recursive: true });
-
-  // read existing config (or empty object)
-  const existing = await getConfig();
-
-  // add new values
-  const updated = { ...existing, ...config };
-  await writeFile(CONFIG_FILE, JSON.stringify(updated, null, 2), "utf-8");
+export async function setConfig(config: Config) {
+  try {
+    await mkdir(CONFIG_DIR, { recursive: true });
+    const existingConfig = await getConfig();
+    const updatedConfig = { ...existingConfig, ...config };
+    await writeFile(
+      CONFIG_FILE,
+      JSON.stringify(updatedConfig, null, 2),
+      "utf8",
+    );
+  } catch (error) {
+    console.error(`Error occurred in setConfig: ${error}`);
+    throw error;
+  }
 }
