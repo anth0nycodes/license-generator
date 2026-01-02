@@ -4,7 +4,7 @@ An interactive CLI tool to quickly generate open-source licenses for your projec
 
 ## Demo
 
-https://github.com/user-attachments/assets/25d4a68b-4cb3-4570-ac57-88d955bbcb53
+<https://github.com/user-attachments/assets/25d4a68b-4cb3-4570-ac57-88d955bbcb53>
 
 ## Features
 
@@ -27,6 +27,8 @@ npm install -g @anth0nycodes/license-generator
 
 ## Usage
 
+### Interactive Mode (Default)
+
 ```bash
 generate-license
 ```
@@ -37,6 +39,41 @@ The CLI will guide you through:
 2. **Enter copyright holder** - Defaults to your git username
 3. **Enter copyright year** - Defaults to the current year
 4. **Confirm** - The LICENSE file will be created in your current directory
+
+### Options
+
+#### Quick Mode
+
+Generate a license instantly using your saved default license, current year, and GitHub username:
+
+```bash
+generate-license --quick
+# or
+generate-license -q
+```
+
+#### Set Default License
+
+Set a default license for quick mode:
+
+```bash
+generate-license --set <license-key>
+# or
+generate-license -s <license-key>
+
+# Example:
+generate-license --set mit
+```
+
+#### List Available Licenses
+
+View all available license keys that can be used with the `--set` option:
+
+```bash
+generate-license --list
+# or
+generate-license --ls
+```
 
 ## Supported Licenses
 
@@ -59,6 +96,7 @@ This tool uses the GitHub Licenses API, which includes:
 ## Requirements
 
 - Node.js 20.x or higher
+- Git
 
 ## Development
 
@@ -85,12 +123,6 @@ pnpm start
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 For detailed guidelines on how to contribute, please see our [Contributing Guide](CONTRIBUTING.md).
-
-## Author
-
-**Anthony Hoang**
-
-- GitHub: [@anth0nycodes](https://github.com/anth0nycodes)
 
 ## Links
 
