@@ -17,17 +17,20 @@ Please be respectful and considerate in your interactions with other contributor
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/license-generator.git
    cd license-generator
    ```
 
 3. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 4. Create a new branch for your feature or bug fix:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -45,10 +48,6 @@ pnpm build
 
 # Run the built version
 pnpm start
-
-# Test as an installed package
-pnpm link
-generate-license
 ```
 
 ### Making Changes
@@ -66,11 +65,13 @@ generate-license
 ### Pull Request Process
 
 1. Commit your changes with clear, descriptive commit messages:
+
    ```bash
    git commit -m "Add feature: description of your changes"
    ```
 
 2. Push to your fork:
+
    ```bash
    git push origin feature/your-feature-name
    ```
