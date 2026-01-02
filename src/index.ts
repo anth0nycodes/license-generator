@@ -8,6 +8,15 @@ import color from "picocolors";
 import { getGitUsername } from "./helpers.js";
 import { getConfig, setConfig } from "./helpers.js";
 import { BASE_URL } from "./constants.js";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { readFileSync } from "node:fs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(
+  readFileSync(join(__dirname, "../package.json"), "utf-8"),
+);
 
 const main = async () => {
   const licenses = await getLicenses();
@@ -17,7 +26,7 @@ const main = async () => {
     .description(
       "A CLI application that generates open-source licenses for your repositories.",
     )
-    .version("0.2.0");
+    .version(packageJson.version);
 
   program
     .option("--ls, --list", "list all available license keys")
