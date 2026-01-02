@@ -8,20 +8,55 @@ import color from "picocolors";
 import { getGitUsername } from "./helpers.js";
 
 const main = async () => {
+  const BASE_URL = "https://api.github.com/licenses";
+
   program
     .name("License Generator")
     .description(
-      "A CLI application that generates open-source licenses for your repositories.",
+      "A CLI application that generates open-source licenses for your repositories."
     )
     .version("0.1.3");
 
   // TODO: Add options, so you can manually add a license flag like --license mit
 
+  // --quick option for power users
+  program.option(
+    "-q, --quick",
+    "Default to MIT license with current date & GitHub username"
+  );
+
   program.parse();
+
+  const opts = program.opts();
+  if (opts.quick) {
+    let name: string;
+
+    // in case user hasn't set git config
+    try {
+      name = getGitUsername();
+    } catch (error) {
+      console.error("Error: Git username not configured.");
+      console.error("Please run: git config --global user.name 'Your Name'");
+      process.exit(1);
+    }
+    let year = String(new Date().getFullYear());
+    let answers = { name, year };
+    let licenseKey = "mit";
+
+    const licenseOptionContent = await getLicenseContent(
+      `${BASE_URL}/${licenseKey}`
+    );
+    try {
+      await createLicense(licenseOptionContent, answers.year, answers.name);
+    } catch (error) {
+      console.error(`Error occurred in createLicense: ${error}`);
+      throw error;
+    }
+    return;
+  }
 
   intro(color.blueBright("License Generator"));
 
-  const BASE_URL = "https://api.github.com/licenses";
   const licenses = await getLicenses();
 
   // List all available licenses from github api
@@ -72,7 +107,7 @@ const main = async () => {
 
   // Grab the content of the selected license
   const licenseOptionContent = await getLicenseContent(
-    `${BASE_URL}/${String(licenseOption)}`,
+    `${BASE_URL}/${String(licenseOption)}`
   );
 
   // Write LICENSE file
