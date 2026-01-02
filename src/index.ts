@@ -29,7 +29,7 @@ const main = async () => {
   program
     .option(
       "-q, --quick",
-      "Default to MIT license with current date & GitHub username"
+      "Use saved default license with current date & GitHub username"
     )
     .option("-s, --set <license>", "Set default license for --quick option");
 
