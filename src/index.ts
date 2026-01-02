@@ -6,6 +6,7 @@ import inquirer from "inquirer";
 import { createLicense, getLicenseContent, getLicenses } from "./license.js";
 import color from "picocolors";
 import { getGitUsername } from "./helpers.js";
+import { getConfig, setConfig } from "./helpers.js";
 
 const main = async () => {
   const BASE_URL = "https://api.github.com/licenses";
@@ -20,14 +21,39 @@ const main = async () => {
   // TODO: Add options, so you can manually add a license flag like --license mit
 
   // --quick option for power users
-  program.option(
-    "-q, --quick",
-    "Default to MIT license with current date & GitHub username"
-  );
+  program
+    .option(
+      "-q, --quick",
+      "Default to MIT license with current date & GitHub username"
+    )
+    .option("-s, --set <license>", "Set default license for --quick option");
 
   program.parse();
 
   const opts = program.opts();
+
+  if (opts.set) {
+    const licenseKey = opts.set.toLowerCase();
+    const licenses = await getLicenses();
+
+    // validate
+    const isValid = licenses.some((l) => l.key === licenseKey);
+
+    if (!isValid) {
+      console.error(`Error: "${licenseKey}" is not a valid license.`);
+      console.error(
+        "Available licenses:",
+        licenses.map((l) => l.key).join(", ")
+      );
+      process.exit(1);
+    }
+
+    await setConfig({ defaultLicense: licenseKey });
+    console.log(`Default license set to: ${color.blueBright(licenseKey)}`);
+    console.log(`Use --quick to generate with this license.`);
+    return;
+  }
+
   if (opts.quick) {
     let name: string;
 
@@ -41,8 +67,8 @@ const main = async () => {
     }
     let year = String(new Date().getFullYear());
     let answers = { name, year };
-    let licenseKey = "mit";
-
+    const config = await getConfig();
+    let licenseKey = config.defaultLicense || "mit";
     const licenseOptionContent = await getLicenseContent(
       `${BASE_URL}/${licenseKey}`
     );
