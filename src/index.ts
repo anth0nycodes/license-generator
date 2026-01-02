@@ -8,10 +8,17 @@ import color from "picocolors";
 import { getGitUsername } from "./helpers.js";
 
 const main = async () => {
+  const BASE_URL = "https://api.github.com/licenses";
+  const licenses = await getLicenses();
+
   program
     .name("License Generator")
     .description(
       "A CLI application that generates open-source licenses for your repositories.",
+    )
+    .option(
+      "--ls, --list",
+      "list all available license keys that can be used to set a default license in quick mode",
     )
     .version("0.1.3");
 
@@ -19,10 +26,18 @@ const main = async () => {
 
   program.parse();
 
-  intro(color.blueBright("License Generator"));
+  const opts = program.opts();
 
-  const BASE_URL = "https://api.github.com/licenses";
-  const licenses = await getLicenses();
+  // Lists all available license keys to be set as a default for future quick mode license generation
+  if (opts.list) {
+    const availableLicenseKeys = licenses
+      .map((license) => `${color.yellow(license.name)}: ${license.key}`)
+      .join("\n");
+    console.log(`Available license keys:\n${availableLicenseKeys}`);
+    process.exit(0);
+  }
+
+  intro(color.blueBright("License Generator"));
 
   // List all available licenses from github api
   const licenseOption = await select({
