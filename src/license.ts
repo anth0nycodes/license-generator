@@ -3,6 +3,7 @@ import color from "picocolors";
 import { writeFile } from "node:fs/promises";
 import { fileExists } from "./helpers.js";
 import { cancel, confirm, spinner } from "@clack/prompts";
+import { BASE_URL } from "./constants.js";
 
 interface LicenseShape {
   key: string;
@@ -22,11 +23,9 @@ interface LicenseContentShape {
   body: string;
 }
 
-export async function getLicenses(): Promise<LicenseShape[]> {
+export async function getLicenses() {
   try {
-    const { data }: { data: LicenseShape[] } = await axios.get(
-      "https://api.github.com/licenses",
-    );
+    const { data }: { data: LicenseShape[] } = await axios.get(BASE_URL);
     return data;
   } catch (error) {
     console.error(`Error in getLicenses: ${error}`);

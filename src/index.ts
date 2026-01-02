@@ -7,9 +7,9 @@ import { createLicense, getLicenseContent, getLicenses } from "./license.js";
 import color from "picocolors";
 import { getGitUsername } from "./helpers.js";
 import { getConfig, setConfig } from "./helpers.js";
+import { BASE_URL } from "./constants.js";
 
 const main = async () => {
-  const BASE_URL = "https://api.github.com/licenses";
   const licenses = await getLicenses();
 
   program
@@ -17,28 +17,64 @@ const main = async () => {
     .description(
       "A CLI application that generates open-source licenses for your repositories.",
     )
-    .option(
-      "--ls, --list",
-      "list all available license keys that can be used to set a default license in quick mode",
-    )
     .version("0.1.3");
 
-  // --quick option for power users
   program
+    .option("--ls, --list", "list all available license keys")
     .option(
       "-q, --quick",
-      "Use saved default license with current date & GitHub username",
+      "alternative to interactive mode, generate a license using the saved license",
     )
-    .option("-s, --set <license>", "Set default license for --quick option");
+    .option(
+      "-s, --set <license>",
+      "set a default license for -q / --quick option",
+    );
 
   program.parse();
 
   const opts = program.opts();
 
+  // Lists all available license keys
+  if (opts.list) {
+    const availableLicenseKeys = licenses
+      .map((license) => `${color.yellow(license.name)}: ${license.key}`)
+      .join("\n");
+    console.log(`Available license keys:\n${availableLicenseKeys}`);
+    process.exit(0);
+  }
+
+  // Skips interactive mode and generates a license with the saved default license
+  if (opts.quick) {
+    let name: string;
+    let year = String(new Date().getFullYear());
+
+    try {
+      name = getGitUsername();
+    } catch (error) {
+      console.error("Error: Git username not configured.");
+      console.error("Please run: git config --global user.name 'Your Name'");
+      process.exit(1);
+    }
+
+    const config = await getConfig();
+    let licenseKey = config.defaultLicense || "mit";
+
+    const licenseOptionContent = await getLicenseContent(
+      `${BASE_URL}/${licenseKey}`,
+    );
+
+    try {
+      await createLicense(licenseOptionContent, year, name);
+    } catch (error) {
+      console.error(`Error occurred in createLicense: ${error}`);
+      throw error;
+    }
+    return;
+  }
+
+  // Sets a default license
   if (opts.set) {
     const licenseKey = opts.set.toLowerCase();
-
-    // validate
     const isValid = licenses.some((l) => l.key === licenseKey);
 
     if (!isValid) {
@@ -56,42 +92,7 @@ const main = async () => {
     return;
   }
 
-  if (opts.quick) {
-    let name: string;
-
-    // in case user hasn't set git config
-    try {
-      name = getGitUsername();
-    } catch (error) {
-      console.error("Error: Git username not configured.");
-      console.error("Please run: git config --global user.name 'Your Name'");
-      process.exit(1);
-    }
-    let year = String(new Date().getFullYear());
-    let answers = { name, year };
-    const config = await getConfig();
-    let licenseKey = config.defaultLicense || "mit";
-    const licenseOptionContent = await getLicenseContent(
-      `${BASE_URL}/${licenseKey}`,
-    );
-    try {
-      await createLicense(licenseOptionContent, answers.year, answers.name);
-    } catch (error) {
-      console.error(`Error occurred in createLicense: ${error}`);
-      throw error;
-    }
-    return;
-  }
-
-  // Lists all available license keys to be set as a default for future quick mode license generation
-  if (opts.list) {
-    const availableLicenseKeys = licenses
-      .map((license) => `${color.yellow(license.name)}: ${license.key}`)
-      .join("\n");
-    console.log(`Available license keys:\n${availableLicenseKeys}`);
-    process.exit(0);
-  }
-
+  // Interactive mode
   intro(color.blueBright("License Generator"));
 
   // List all available licenses from github api
