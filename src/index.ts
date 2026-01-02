@@ -10,25 +10,24 @@ import { getConfig, setConfig } from "./helpers.js";
 
 const main = async () => {
   const BASE_URL = "https://api.github.com/licenses";
+  const licenses = await getLicenses();
 
   program
     .name("License Generator")
     .description(
-      "A CLI application that generates open-source licenses for your repositories."
+      "A CLI application that generates open-source licenses for your repositories.",
     )
     .option(
       "--ls, --list",
-      "list all available license keys that can be used to set a default license in quick mode"
+      "list all available license keys that can be used to set a default license in quick mode",
     )
     .version("0.1.3");
-
-  // TODO: Add options, so you can manually add a license flag like --license mit
 
   // --quick option for power users
   program
     .option(
       "-q, --quick",
-      "Use saved default license with current date & GitHub username"
+      "Use saved default license with current date & GitHub username",
     )
     .option("-s, --set <license>", "Set default license for --quick option");
 
@@ -38,7 +37,6 @@ const main = async () => {
 
   if (opts.set) {
     const licenseKey = opts.set.toLowerCase();
-    const licenses = await getLicenses();
 
     // validate
     const isValid = licenses.some((l) => l.key === licenseKey);
@@ -47,7 +45,7 @@ const main = async () => {
       console.error(`Error: "${licenseKey}" is not a valid license.`);
       console.error(
         "Available licenses:",
-        licenses.map((l) => l.key).join(", ")
+        licenses.map((l) => l.key).join(", "),
       );
       process.exit(1);
     }
@@ -74,7 +72,7 @@ const main = async () => {
     const config = await getConfig();
     let licenseKey = config.defaultLicense || "mit";
     const licenseOptionContent = await getLicenseContent(
-      `${BASE_URL}/${licenseKey}`
+      `${BASE_URL}/${licenseKey}`,
     );
     try {
       await createLicense(licenseOptionContent, answers.year, answers.name);
@@ -84,10 +82,6 @@ const main = async () => {
     }
     return;
   }
-
-  intro(color.blueBright("License Generator"));
-
-  const licenses = await getLicenses();
 
   // Lists all available license keys to be set as a default for future quick mode license generation
   if (opts.list) {
@@ -148,7 +142,7 @@ const main = async () => {
 
   // Grab the content of the selected license
   const licenseOptionContent = await getLicenseContent(
-    `${BASE_URL}/${String(licenseOption)}`
+    `${BASE_URL}/${String(licenseOption)}`,
   );
 
   // Write LICENSE file
