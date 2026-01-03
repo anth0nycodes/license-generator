@@ -35,8 +35,12 @@ const main = async () => {
       "alternative to interactive mode, generate a license using the saved default license",
     )
     .option(
-      "-s, --set <license>",
+      "--sl, --set-license <license>",
       "set a default license for -q / --quick option",
+    )
+    .option(
+      "--sa, --set-author <author>",
+      "set a default author for -q / --quick option",
     );
 
   program.parse();
@@ -52,30 +56,11 @@ const main = async () => {
     process.exit(0);
   }
 
-  // Skips interactive mode and generates a license with the saved default license
-  if (opts.quick) {
-    let name = getGitUsername();
-    let year = String(new Date().getFullYear());
-
-    const config = await getConfig();
-    let licenseKey = config.defaultLicense || "mit";
-
-    const licenseOptionContent = await getLicenseContent(
-      `${BASE_URL}/${licenseKey}`,
-    );
-
-    try {
-      await createLicense(licenseOptionContent, year, name);
-    } catch (error) {
-      console.error(`Error occurred in createLicense: ${error}`);
-      throw error;
-    }
-    return;
-  }
+  let configUpdated = false;
 
   // Sets a default license
-  if (opts.set) {
-    const licenseKey = opts.set.toLowerCase();
+  if (opts.setLicense) {
+    const licenseKey = opts.setLicense.toLowerCase();
     const isValid = licenses.some((l) => l.key === licenseKey);
 
     if (!isValid) {
@@ -89,6 +74,38 @@ const main = async () => {
 
     await setConfig({ defaultLicense: licenseKey });
     console.log(`Default license set to: ${color.blueBright(licenseKey)}`);
+    configUpdated = true;
+  }
+
+  // Sets a default author
+  if (opts.setAuthor) {
+    const author = opts.setAuthor;
+    await setConfig({ defaultAuthor: author });
+    console.log(`Default author set to: ${color.blueBright(author)}`);
+    configUpdated = true;
+  }
+
+  // Skips interactive mode and generates a license with the saved default license
+  if (opts.quick) {
+    const config = await getConfig();
+    let name = config.defaultAuthor || getGitUsername();
+    let year = String(new Date().getFullYear());
+    let licenseKey = config.defaultLicense || "mit";
+
+    const licenseOptionContent = await getLicenseContent(
+      `${BASE_URL}/${licenseKey}`,
+    );
+
+    try {
+      await createLicense(licenseOptionContent, year, name);
+      process.exit(0);
+    } catch (error) {
+      console.error(`Error occurred in createLicense: ${error}`);
+      throw error;
+    }
+  }
+
+  if (configUpdated) {
     console.log(`Use --quick to generate with this license.`);
     return;
   }

@@ -36,6 +36,7 @@ const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
 export interface Config {
   defaultLicense?: string;
+  defaultAuthor?: string;
 }
 
 export async function getConfig(): Promise<Config> {
