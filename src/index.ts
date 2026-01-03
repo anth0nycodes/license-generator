@@ -116,10 +116,18 @@ const main = async () => {
 
   // Shows current config
   if (opts.showConfig) {
+    if (!(await fileExists(CONFIG_FILE))) {
+      console.log(
+        `${color.yellow("No config file found.")} Nothing to reset. You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
+      );
+      process.exit(0);
+    }
+
     try {
       const config = await readFile(CONFIG_FILE, "utf8");
       const isConfigEmpty = config.includes(JSON.stringify({}, null, 2));
       console.log(`${color.yellow("Your current config:\n")}${config}`);
+
       if (isConfigEmpty) {
         console.log(
           `\n${color.yellow("Note:")} Your config file is empty. You can set a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} and a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
@@ -128,14 +136,8 @@ const main = async () => {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes("no such file or directory")) {
-        console.log(
-          `${color.yellow("No config file found.")} You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
-        );
-      } else {
-        console.error(`Error reading config file: ${errorMessage}`);
-        process.exit(1);
-      }
+      console.error(`Error resetting config: ${errorMessage}`);
+      process.exit(1);
     }
     process.exit(0);
   }
