@@ -4,7 +4,7 @@ Interactive CLI tool to quickly generate open-source licenses for your projects.
 
 ## Demo
 
-![demo](<https://us-east-1.tixte.net/uploads/anth0nycodes.tixte.co/license-demo_(1).gif>)
+<https://github.com/user-attachments/assets/2ec44ced-c982-425f-b87e-0d15e36961b9>
 
 <p align="center"><img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Flicense-generator?style=plastic"></p>
 
