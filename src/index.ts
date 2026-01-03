@@ -118,15 +118,16 @@ const main = async () => {
   if (opts.showConfig) {
     if (!(await fileExists(CONFIG_FILE))) {
       console.log(
-        `${color.yellow("No config file found.")} Nothing to reset. You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
+        `${color.yellow("No config file found.")} No config to display. You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
       );
       process.exit(0);
     }
 
     try {
-      const config = await readFile(CONFIG_FILE, "utf8");
-      const isConfigEmpty = config.includes(JSON.stringify({}, null, 2));
-      console.log(`${color.yellow("Your current config:\n")}${config}`);
+      const config = await getConfig();
+      const configString = JSON.stringify(config, null, 2);
+      const isConfigEmpty = Object.keys(config).length === 0;
+      console.log(`${color.yellow("Your current config:\n")}${configString}`);
 
       if (isConfigEmpty) {
         console.log(
@@ -136,7 +137,7 @@ const main = async () => {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      console.error(`Error resetting config: ${errorMessage}`);
+      console.error(`Error reading config: ${errorMessage}`);
       process.exit(1);
     }
     process.exit(0);
