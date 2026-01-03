@@ -4,6 +4,8 @@ import { access } from "node:fs/promises";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
+import { LicenseShape } from "./license.js";
+import color from "picocolors";
 
 export function getGitUsername() {
   try {
@@ -13,13 +15,17 @@ export function getGitUsername() {
     const errorMessage = error instanceof Error ? error.message : String(error);
     if (errorMessage.includes("git config user.name")) {
       console.error(
-        'Error: Git username not configured. Set it with: git config --global user.name "Your Name"',
+        `Error: Git username not configured. Set it with: ${color.cyan('git config --global user.name "Your Name"')}`,
       );
     } else {
       console.error(`Error occurred in getGitUsername: ${errorMessage}`);
     }
     throw error;
   }
+}
+
+export function isValid(licenses: LicenseShape[], licenseKey: string) {
+  return licenses.some((l) => l.key === licenseKey);
 }
 
 export async function fileExists(path: string) {
@@ -32,7 +38,7 @@ export async function fileExists(path: string) {
 }
 
 const CONFIG_DIR = join(homedir(), ".license-generator");
-const CONFIG_FILE = join(CONFIG_DIR, "config.json");
+export const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
 export interface Config {
   defaultLicense?: string;

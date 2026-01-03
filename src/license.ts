@@ -5,7 +5,7 @@ import { fileExists } from "./helpers.js";
 import { cancel, confirm, spinner } from "@clack/prompts";
 import { BASE_URL } from "./constants.js";
 
-interface LicenseShape {
+export interface LicenseShape {
   key: string;
   name: string;
   spdx_id: string;
