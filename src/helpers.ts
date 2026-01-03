@@ -4,7 +4,7 @@ import { access } from "node:fs/promises";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { LicenseShape } from "./license.js";
+import type { LicenseShape } from "./license.js";
 import color from "picocolors";
 
 export function getGitUsername() {
