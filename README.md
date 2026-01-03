@@ -62,6 +62,33 @@ generate-license --sa "anth0nycodes"
 generate-license --ls
 ```
 
+#### Show License Information
+
+View detailed information about a specific license:
+
+```bash
+generate-license -i <license-key>
+
+# Example:
+generate-license -i mit
+```
+
+#### Show Config
+
+Display your current configuration settings:
+
+```bash
+generate-license --sc
+```
+
+#### Reset Config
+
+Reset your configuration to default (clears saved license and author):
+
+```bash
+generate-license --rc
+```
+
 ## Supported Licenses
 
 This tool uses the GitHub Licenses API, which includes:
