@@ -35,7 +35,7 @@ const main = async () => {
       "alternative to interactive mode, generate a license using the saved default license",
     )
     .option(
-      "--sl, --set-license <license>",
+      "--sl, --set-license <license-key>",
       "set a default license for -q / --quick option",
     )
     .option(

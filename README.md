@@ -1,25 +1,20 @@
 # License Generator
 
-An interactive CLI tool to quickly generate open-source licenses for your projects.
+Interactive CLI tool to quickly generate open-source licenses for your projects.
 
 ## Demo
 
-<https://github.com/user-attachments/assets/25d4a68b-4cb3-4570-ac57-88d955bbcb53>
+![demo](https://us-east-1.tixte.net/uploads/anth0nycodes.tixte.co/license-demo.mp4)
+
+<p align="center"><img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Flicense-generator?style=plastic"></p>
 
 ## Features
 
-- 🚀 Interactive license selection from GitHub's license API
-- 📝 Automatic copyright holder and year detection from git config
-- ✨ Beautiful terminal UI powered by @clack/prompts and inquirer
-- 🔄 Overwrite protection for existing LICENSE files
+- Interactive license selection from GitHub's license API
+- Automatic copyright holder and year detection from git config
+- Beautiful terminal UI with overwrite protection
 
 ## Installation
-
-```bash
-pnpm add -g @anth0nycodes/license-generator
-```
-
-Or using npm:
 
 ```bash
 npm install -g @anth0nycodes/license-generator
@@ -33,45 +28,39 @@ npm install -g @anth0nycodes/license-generator
 generate-license
 ```
 
-The CLI will guide you through:
-
-1. **Select a license** - Choose from popular open-source licenses (MIT, Apache-2.0, GPL, etc.)
-2. **Enter copyright holder** - Defaults to your git username
-3. **Enter copyright year** - Defaults to the current year
-4. **Confirm** - The LICENSE file will be created in your current directory
+Select a license, enter copyright holder (defaults to git username) and year (defaults to current year), then confirm.
 
 ### Options
 
 #### Quick Mode
 
-Generate a license instantly using your saved default license, current year, and GitHub username:
+Generate a license instantly using saved defaults:
 
 ```bash
-generate-license --quick
-# or
 generate-license -q
 ```
 
 #### Set Default License
 
-Set a default license for quick mode:
-
 ```bash
-generate-license --set <license-key>
-# or
-generate-license -s <license-key>
+generate-license --sl <license-key>
 
 # Example:
-generate-license --set mit
+generate-license --sl mit
+```
+
+#### Set Default Author
+
+```bash
+generate-license --sa <author>
+
+# Example:
+generate-license --sa "anth0nycodes"
 ```
 
 #### List Available Licenses
 
-View all available license keys that can be used with the `--set` option:
-
 ```bash
-generate-license --list
-# or
 generate-license --ls
 ```
 
