@@ -150,7 +150,7 @@ const main = async () => {
     }
 
     try {
-      await writeFile(CONFIG_FILE, JSON.stringify({}, null, 2), "utf8");
+      await setConfig({});
       console.log(color.greenBright("Config reset successfully!"));
     } catch (error) {
       const errorMessage =

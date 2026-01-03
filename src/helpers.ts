@@ -59,7 +59,10 @@ export async function setConfig(config: Config) {
   try {
     await mkdir(CONFIG_DIR, { recursive: true });
     const existingConfig = await getConfig();
-    const updatedConfig = { ...existingConfig, ...config };
+    // If config has any keys, merge with existing; otherwise use config as-is (for reset)
+    const updatedConfig = Object.keys(config).length > 0
+      ? { ...existingConfig, ...config }
+      : config;
     await writeFile(
       CONFIG_FILE,
       JSON.stringify(updatedConfig, null, 2),
