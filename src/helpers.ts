@@ -6,8 +6,20 @@ import { join } from "node:path";
 import { homedir } from "node:os";
 
 export function getGitUsername() {
-  const uncleanName = String(execSync("git config user.name"));
-  return uncleanName.replace(/\r?\n/g, "");
+  try {
+    const uncleanName = String(execSync("git config user.name"));
+    return uncleanName.replace(/\r?\n/g, "");
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes("git config user.name")) {
+      console.error(
+        'Error: Git username not configured. Set it with: git config --global user.name "Your Name"',
+      );
+    } else {
+      console.error(`Error occurred in getGitUsername: ${errorMessage}`);
+    }
+    throw error;
+  }
 }
 
 export async function fileExists(path: string) {
