@@ -54,16 +54,8 @@ const main = async () => {
 
   // Skips interactive mode and generates a license with the saved default license
   if (opts.quick) {
-    let name: string;
+    let name = getGitUsername();
     let year = String(new Date().getFullYear());
-
-    try {
-      name = getGitUsername();
-    } catch (error) {
-      console.error("Error: Git username not configured.");
-      console.error("Please run: git config --global user.name 'Your Name'");
-      process.exit(1);
-    }
 
     const config = await getConfig();
     let licenseKey = config.defaultLicense || "mit";
