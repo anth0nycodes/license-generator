@@ -2,7 +2,7 @@
 
 Interactive CLI tool to quickly generate open-source licenses for your projects.
 
-<https://github.com/user-attachments/assets/2ec44ced-c982-425f-b87e-0d15e36961b9>
+![demo](./assets/demo.gif)
 
 <p align="center"><img alt="NPM Downloads" src="https://img.shields.io/npm/d18m/%40anth0nycodes%2Flicense-generator?style=plastic"></p>
 
