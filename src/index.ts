@@ -5,7 +5,7 @@ import { intro, select, isCancel, cancel } from "@clack/prompts";
 import inquirer from "inquirer";
 import { createLicense, getLicenseContent, getLicenses } from "./license.js";
 import color from "picocolors";
-import { CONFIG_FILE, getGitUsername, isValid } from "./helpers.js";
+import { CONFIG_FILE, fileExists, getGitUsername, isValid } from "./helpers.js";
 import { getConfig, setConfig } from "./helpers.js";
 import { BASE_URL } from "./constants.js";
 import { fileURLToPath } from "node:url";
@@ -116,19 +116,48 @@ const main = async () => {
 
   // Shows current config
   if (opts.showConfig) {
-    const config = await readFile(CONFIG_FILE, "utf8");
-    console.log(`${color.yellow("Your current config:\n")}${config}`);
-    if (config.includes(JSON.stringify({}, null, 2))) {
-      console.log(
-        `\n${color.yellow("Note:")} Your config file is empty. You can set a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} and a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
-      );
+    try {
+      const config = await readFile(CONFIG_FILE, "utf8");
+      const isConfigEmpty = config.includes(JSON.stringify({}, null, 2));
+      console.log(`${color.yellow("Your current config:\n")}${config}`);
+      if (isConfigEmpty) {
+        console.log(
+          `\n${color.yellow("Note:")} Your config file is empty. You can set a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} and a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
+        );
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("no such file or directory")) {
+        console.log(
+          `${color.yellow("No config file found.")} You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
+        );
+      } else {
+        console.error(`Error reading config file: ${errorMessage}`);
+        process.exit(1);
+      }
     }
     process.exit(0);
   }
 
+  // Resets config
   if (opts.resetConfig) {
-    await writeFile(CONFIG_FILE, JSON.stringify({}, null, 2), "utf8");
-    console.log(color.greenBright("Config reset successfully!"));
+    if (!(await fileExists(CONFIG_FILE))) {
+      console.log(
+        `${color.yellow("No config file found.")} Nothing to reset. You can create a config by setting a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} or a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
+      );
+      process.exit(0);
+    }
+
+    try {
+      await writeFile(CONFIG_FILE, JSON.stringify({}, null, 2), "utf8");
+      console.log(color.greenBright("Config reset successfully!"));
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error(`Error resetting config: ${errorMessage}`);
+      process.exit(1);
+    }
     process.exit(0);
   }
 
