@@ -106,7 +106,7 @@ const main = async () => {
   }
 
   if (configUpdated) {
-    console.log(`Use --quick to generate with this license.`);
+    console.log(`Use -q / --quick to generate with this license.`);
     return;
   }
 
