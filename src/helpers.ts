@@ -1,31 +1,39 @@
 import { execSync } from "node:child_process";
 import { constants } from "node:fs";
-import { access } from "node:fs/promises";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, access } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import type { LicenseShape } from "./license.js";
+import type { Config, LicenseShape } from "./types.js";
 import color from "picocolors";
 
-export function getGitUsername() {
+export function getGitUsername(options: { fallback?: string } = {}) {
   try {
     const uncleanName = String(execSync("git config user.name"));
     return uncleanName.replace(/\r?\n/g, "");
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (options.fallback !== undefined) {
+      return options.fallback;
+    }
+
+    const errorMessage = getErrorMessage(error);
     if (errorMessage.includes("git config user.name")) {
       console.error(
         `Error: Git username not configured. Set it with: ${color.cyan('git config --global user.name "Your Name"')}`,
       );
+      process.exit(1);
     } else {
       console.error(`Error occurred in getGitUsername: ${errorMessage}`);
+      process.exit(1);
     }
-    throw error;
   }
 }
 
-export function isValid(licenses: LicenseShape[], licenseKey: string) {
+export function isValidLicense(licenses: LicenseShape[], licenseKey: string) {
   return licenses.some((l) => l.key === licenseKey);
+}
+
+export function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export async function fileExists(path: string) {
@@ -40,11 +48,6 @@ export async function fileExists(path: string) {
 const CONFIG_DIR = join(homedir(), ".license-generator");
 export const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
-export interface Config {
-  defaultLicense?: string;
-  defaultAuthor?: string;
-}
-
 export async function getConfig(): Promise<Config> {
   try {
     const content = await readFile(CONFIG_FILE, "utf8");
@@ -56,20 +59,12 @@ export async function getConfig(): Promise<Config> {
 }
 
 export async function setConfig(config: Config) {
-  try {
-    await mkdir(CONFIG_DIR, { recursive: true });
-    const existingConfig = await getConfig();
-    // If config has any keys, merge with existing; otherwise use config as-is (for reset)
-    const updatedConfig = Object.keys(config).length > 0
-      ? { ...existingConfig, ...config }
-      : config;
-    await writeFile(
-      CONFIG_FILE,
-      JSON.stringify(updatedConfig, null, 2),
-      "utf8",
-    );
-  } catch (error) {
-    console.error(`Error occurred in setConfig: ${error}`);
-    throw error;
-  }
+  await mkdir(CONFIG_DIR, { recursive: true });
+  const existingConfig = await getConfig();
+
+  // If config has any keys, merge with existing; otherwise use config as-is (for reset)
+  const updatedConfig =
+    Object.keys(config).length > 0 ? { ...existingConfig, ...config } : config;
+
+  await writeFile(CONFIG_FILE, JSON.stringify(updatedConfig, null, 2), "utf8");
 }
