@@ -5,13 +5,19 @@ import { intro, select, isCancel, cancel } from "@clack/prompts";
 import inquirer from "inquirer";
 import { createLicense, getLicenseContent, getLicenses } from "./license.js";
 import color from "picocolors";
-import { CONFIG_FILE, fileExists, getGitUsername, isValid } from "./helpers.js";
-import { getConfig, setConfig } from "./helpers.js";
+import {
+  CONFIG_FILE,
+  fileExists,
+  getErrorMessage,
+  getGitUsername,
+  getConfig,
+  setConfig,
+  isValidLicense,
+} from "./helpers.js";
 import { BASE_URL } from "./constants.js";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -70,7 +76,7 @@ const main = async () => {
   if (opts.info) {
     const licenseKey = opts.info.toLowerCase();
 
-    if (!isValid(licenses, licenseKey)) {
+    if (!isValidLicense(licenses, licenseKey)) {
       console.error(`Error: "${licenseKey}" is not a valid license.`);
       console.error(
         "Available licenses:",
@@ -79,11 +85,19 @@ const main = async () => {
       process.exit(1);
     }
 
-    const licenseContent = await getLicenseContent(`${BASE_URL}/${licenseKey}`);
-    console.log(
-      `${color.yellow("Description:")} ${licenseContent.description}`,
-    );
-    process.exit(0);
+    try {
+      const { description: licenseDescription } = await getLicenseContent(
+        `${BASE_URL}/${licenseKey}`,
+      );
+      console.log(`${color.yellow("Description:")} ${licenseDescription}`);
+      process.exit(0);
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      console.error(
+        `Error grabbing information on ${licenseKey} license: ${errorMessage}`,
+      );
+      process.exit(1);
+    }
   }
 
   let configUpdated = false;
@@ -92,7 +106,7 @@ const main = async () => {
   if (opts.setLicense) {
     const licenseKey = opts.setLicense.toLowerCase();
 
-    if (!isValid(licenses, licenseKey)) {
+    if (!isValidLicense(licenses, licenseKey)) {
       console.error(`Error: "${licenseKey}" is not a valid license.`);
       console.error(
         "Available licenses:",
@@ -101,17 +115,34 @@ const main = async () => {
       process.exit(1);
     }
 
-    await setConfig({ defaultLicense: licenseKey });
-    console.log(`Default license set to: ${color.blueBright(licenseKey)}`);
-    configUpdated = true;
+    try {
+      await setConfig({ defaultLicense: licenseKey });
+      console.log(`Default license set to: ${color.blueBright(licenseKey)}`);
+      configUpdated = true;
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      console.error(
+        `Error trying to set ${licenseKey} as the default license: ${errorMessage}`,
+      );
+      process.exit(1);
+    }
   }
 
   // Sets a default author
   if (opts.setAuthor) {
     const author = opts.setAuthor;
-    await setConfig({ defaultAuthor: author });
-    console.log(`Default author set to: ${color.blueBright(author)}`);
-    configUpdated = true;
+
+    try {
+      await setConfig({ defaultAuthor: author });
+      console.log(`Default author set to: ${color.blueBright(author)}`);
+      configUpdated = true;
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      console.error(
+        `Error trying to set ${author} as the default author: ${errorMessage}`,
+      );
+      process.exit(1);
+    }
   }
 
   // Shows current config
@@ -134,13 +165,13 @@ const main = async () => {
           `\n${color.yellow("Note:")} Your config file is empty. You can set a default author with ${color.cyan("--sa <author>")} / ${color.cyan("--set-author <author>")} and a default license with ${color.cyan("--sl <license-key>")} / ${color.cyan("--set-license <license-key>")}.`,
         );
       }
+
+      process.exit(0);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       console.error(`Error reading config: ${errorMessage}`);
       process.exit(1);
     }
-    process.exit(0);
   }
 
   // Resets config
@@ -155,32 +186,33 @@ const main = async () => {
     try {
       await setConfig({});
       console.log(color.greenBright("Config reset successfully!"));
+      process.exit(0);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       console.error(`Error resetting config: ${errorMessage}`);
       process.exit(1);
     }
-    process.exit(0);
   }
 
   // Skips interactive mode and generates a license with the saved default license
   if (opts.quick) {
-    const config = await getConfig();
-    let name = config.defaultAuthor || getGitUsername();
     let year = String(new Date().getFullYear());
-    let licenseKey = config.defaultLicense || "mit";
-
-    const licenseOptionContent = await getLicenseContent(
-      `${BASE_URL}/${licenseKey}`,
-    );
 
     try {
+      const config = await getConfig();
+      // In quick mode, we need git config if no default author is set
+      const name = config.defaultAuthor || getGitUsername();
+      const licenseKey = config.defaultLicense || "mit";
+      const licenseOptionContent = await getLicenseContent(
+        `${BASE_URL}/${licenseKey}`,
+      );
+
       await createLicense(licenseOptionContent, year, name);
       process.exit(0);
     } catch (error) {
-      console.error(`Error occurred in createLicense: ${error}`);
-      throw error;
+      const errorMessage = getErrorMessage(error);
+      console.error(`Error occurred trying to create license: ${errorMessage}`);
+      process.exit(1);
     }
   }
 
@@ -217,7 +249,7 @@ const main = async () => {
         type: "input",
         name: "name",
         message: "Enter name:",
-        default: getGitUsername(),
+        default: getGitUsername({ fallback: "placeholder" }),
         validate(value) {
           if (value.length === 0) return "Name is required";
           return true;
@@ -240,22 +272,24 @@ const main = async () => {
     process.exit(0);
   }
 
-  // Grab the content of the selected license
-  const licenseOptionContent = await getLicenseContent(
-    `${BASE_URL}/${String(licenseOption)}`,
-  );
-
   // Write LICENSE file
   try {
+    // Grab the content of the selected license
+    const licenseOptionContent = await getLicenseContent(
+      `${BASE_URL}/${String(licenseOption)}`,
+    );
     await createLicense(licenseOptionContent, answers.year, answers.name);
   } catch (error) {
-    console.error(`Error occurred in createLicense: ${error}`);
-    throw error;
+    const errorMessage = getErrorMessage(error);
+    console.error(`Error occurred trying to create license: ${errorMessage}`);
+    process.exit(1);
   }
 };
 
 try {
-  main();
+  await main();
 } catch (error) {
-  console.error(`Error in main: ${error}`);
+  const errorMessage = getErrorMessage(error);
+  console.error(`Error in main: ${errorMessage}`);
+  process.exit(1);
 }

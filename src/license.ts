@@ -1,56 +1,35 @@
 import axios from "axios";
 import color from "picocolors";
 import { writeFile } from "node:fs/promises";
-import { fileExists } from "./helpers.js";
+import { fileExists, getErrorMessage } from "./helpers.js";
 import { cancel, confirm, spinner } from "@clack/prompts";
 import { BASE_URL } from "./constants.js";
-
-export interface LicenseShape {
-  key: string;
-  name: string;
-  spdx_id: string;
-  url: string;
-  node_id: string;
-}
-
-interface LicenseContentShape {
-  key: string;
-  name: string;
-  description: string;
-  permissions: string[];
-  conditions: string[];
-  limitations: string[];
-  body: string;
-}
+import { LicenseContentShape, LicenseShape } from "./types.js";
 
 export async function getLicenses() {
   try {
     const { data }: { data: LicenseShape[] } = await axios.get(BASE_URL);
     return data;
   } catch (error) {
-    console.error(`Error in getLicenses: ${error}`);
-    throw error;
+    const errorMessage = getErrorMessage(error);
+    console.error(`Error in getLicenses: ${errorMessage}`);
+    process.exit(1);
   }
 }
 
 export async function getLicenseContent(
   url: string,
 ): Promise<LicenseContentShape> {
-  try {
-    const { data }: { data: LicenseContentShape } = await axios.get(url);
-    return {
-      key: data.key,
-      name: data.name,
-      description: data.description,
-      permissions: data.permissions,
-      conditions: data.conditions,
-      limitations: data.limitations,
-      body: data.body,
-    };
-  } catch (error) {
-    console.error(`Error in getLicenseContent: ${error}`);
-    throw error;
-  }
+  const { data }: { data: LicenseContentShape } = await axios.get(url);
+  return {
+    key: data.key,
+    name: data.name,
+    description: data.description,
+    permissions: data.permissions,
+    conditions: data.conditions,
+    limitations: data.limitations,
+    body: data.body,
+  };
 }
 
 export async function createLicense(
