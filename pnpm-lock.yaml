@@ -19,7 +19,7 @@ importers:
         version: 14.0.2
       inquirer:
         specifier: ^13.1.0
-        version: 13.2.0(@types/node@25.0.8)
+        version: 13.2.1(@types/node@25.0.8)
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -465,8 +465,8 @@ packages:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
     engines: {node: '>=0.10.0'}
 
-  inquirer@13.2.0:
-    resolution: {integrity: sha512-4CBv58vLrL4CnMgrscW/T5cLvfWM2nRLevttTiZTQyku7YV7/pc2IKyABBU2rDfVl4PiIB0sTRcwOac7BIYKLA==}
+  inquirer@13.2.1:
+    resolution: {integrity: sha512-kjIN+joqgbSncQJ6GfN7gV9AbDQlMA+hJ96xcwkQUwP9KN/ZIusoJ2mAfdt0LPrZJQsEyk5i/YrgJQTxSgzlPw==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -905,7 +905,7 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  inquirer@13.2.0(@types/node@25.0.8):
+  inquirer@13.2.1(@types/node@25.0.8):
     dependencies:
       '@inquirer/ansi': 2.0.3
       '@inquirer/core': 11.1.1(@types/node@25.0.8)
