@@ -248,7 +248,7 @@ const main = async () => {
       {
         type: "input",
         name: "name",
-        message: "Enter name:",
+        message: "Enter author name:",
         default: getGitUsername({ fallback: "placeholder" }),
         validate(value) {
           if (value.length === 0) return "Name is required";
