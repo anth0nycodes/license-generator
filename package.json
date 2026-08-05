@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "check": "tsc --noEmit",
+    "prepublishOnly": "pnpm build",
     "publish:npm": "pnpm publish --access public"
   },
   "main": "dist/index.js",
@@ -58,5 +59,6 @@
     "commander": "^14.0.2",
     "inquirer": "^13.1.0",
     "picocolors": "^1.1.1"
-  }
+  },
+  "packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264"
 }
