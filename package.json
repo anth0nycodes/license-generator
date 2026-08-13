@@ -15,6 +15,9 @@
   "bin": {
     "generate-license": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "license",
     "license-generator",
